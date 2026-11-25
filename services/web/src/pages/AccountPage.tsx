@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api, type DateFormat, type TimeFormat } from '../api'
 import { useAuth } from '../auth'
+import { CalendarFeedSection } from '../components/CalendarFeedSection'
 import { Alert } from '../components/Feedback'
 import { Icon } from '../components/Icon'
 import { LanguageSwitcher } from '../components/LanguageSwitcher'
@@ -160,6 +161,8 @@ export function AccountPage() {
           {t('auth:datetimePreview', { sample: datetimePreview })}
         </p>
       </Section>
+
+      <CalendarFeedSection />
 
       <Section icon="palette" title={t('auth:themeStudio')}>
         <ThemeStudio />

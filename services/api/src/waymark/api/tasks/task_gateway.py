@@ -138,6 +138,21 @@ class TaskGateway:
         )
         return list(self._db.scalars(stmt).all())
 
+    def list_open_dated(
+        self,
+        accessible_ids: Select[tuple[int]],
+    ) -> list[Task]:
+        """Non-archived, non-terminal tasks that have a due date."""
+        stmt = (
+            select(Task)
+            .where(Task.id.in_(accessible_ids))
+            .where(Task.archived_at.is_(None))
+            .where(Task.status.notin_(_CLOSED_STATUSES))
+            .where(Task.due_at.is_not(None))
+            .order_by(nulls_last(Task.due_at.asc()), Task.id.asc())
+        )
+        return list(self._db.scalars(stmt).all())
+
     def max_rank_for_owner(self, *, owner_user_id: int) -> float | None:
         """Max rank among non-archived tasks for the owner (append target)."""
         stmt = select(func.max(Task.rank)).where(

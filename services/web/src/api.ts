@@ -31,6 +31,17 @@ export type InvitePreview = {
   expires_at: string
 }
 
+export type CalendarFeedStatus = {
+  active: boolean
+  created_at: string | null
+  last_accessed_at: string | null
+  revoked_at: string | null
+}
+
+export type CalendarFeedToken = CalendarFeedStatus & {
+  token: string
+}
+
 export type CommentRef = {
   kind: 'user' | 'task' | 'artifact' | 'comment' | string
   raw: string
@@ -554,6 +565,13 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify(body),
     }),
+  getCalendarFeed: () => request<CalendarFeedStatus>('/api/me/calendar-feed'),
+  createCalendarFeed: () =>
+    request<CalendarFeedToken>('/api/me/calendar-feed', { method: 'POST' }),
+  rotateCalendarFeed: () =>
+    request<CalendarFeedToken>('/api/me/calendar-feed/rotate', { method: 'POST' }),
+  revokeCalendarFeed: () =>
+    request<CalendarFeedStatus>('/api/me/calendar-feed/revoke', { method: 'POST' }),
   getMyStats: (windowDays = 7) =>
     request<UserStats>(`/api/me/stats?window_days=${windowDays}`),
   listContacts: (q?: string) => {

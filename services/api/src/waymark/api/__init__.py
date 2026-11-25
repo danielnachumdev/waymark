@@ -3,6 +3,7 @@
 from waymark.api.admin import admin_backup_api, admin_storage_api
 from waymark.api.artifacts import artifacts_api
 from waymark.api.auth import auth_api
+from waymark.api.calendar_feeds import me_calendar_feed_api, public_calendar_feed_api
 from waymark.api.contacts import contacts_api
 from waymark.api.invites import invites_api
 from waymark.api.me_stats import me_stats_api
@@ -29,9 +30,11 @@ __all__ = [
     "auth_api",
     "contacts_api",
     "invites_api",
+    "me_calendar_feed_api",
     "me_stats_api",
     "notifications_api",
     "preferences_api",
+    "public_calendar_feed_api",
     "public_external_shares_api",
     "saved_views_api",
     "task_activity_api",

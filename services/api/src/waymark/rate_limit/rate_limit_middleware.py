@@ -9,11 +9,14 @@ from waymark.rate_limit.token_rate_limiter import TokenRateLimiter
 from waymark.token_usage.client_ip import ClientIp
 
 _EXEMPT_PATHS = frozenset({"/api/health"})
-_PUBLIC_SHARE_PREFIX = "/api/public/shares/"
+_PUBLIC_IP_PREFIXES = (
+    "/api/public/shares/",
+    "/api/public/calendar/",
+)
 
 
 class RateLimitMiddleware:
-    """Enforce per-API-token ceilings and public-share IP ceilings after Authn."""
+    """Enforce per-API-token ceilings and public IP ceilings after Authn."""
 
     def __init__(
         self,
@@ -44,8 +47,8 @@ class RateLimitMiddleware:
         if path in _EXEMPT_PATHS:
             await self.app(scope, receive, send)
             return
-        if path.startswith(_PUBLIC_SHARE_PREFIX):
-            await self._limit_public_share(scope, receive, send)
+        if path.startswith(_PUBLIC_IP_PREFIXES):
+            await self._limit_public_ip(scope, receive, send)
             return
         if not self._enabled:
             await self.app(scope, receive, send)
@@ -61,14 +64,16 @@ class RateLimitMiddleware:
             return
         await self._call_with_headers(scope, receive, send, decision)
 
-    async def _limit_public_share(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def _limit_public_ip(self, scope: Scope, receive: Receive, send: Send) -> None:
         if not self._public_enabled:
             await self.app(scope, receive, send)
             return
         client_ip = ClientIp.from_scope(scope) or "unknown"
         decision = self._public_limiter.check(client_ip)
         if not decision.allowed:
-            response = self._too_many_requests(decision, detail="Rate limit exceeded for public share")
+            response = self._too_many_requests(
+                decision, detail="Rate limit exceeded for public endpoint"
+            )
             await response(scope, receive, send)
             return
         await self._call_with_headers(scope, receive, send, decision)
