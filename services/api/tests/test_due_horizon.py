@@ -6,6 +6,23 @@ from tests.helpers import bootstrap_owner
 from waymark.main import create_app
 
 
+def test_patch_next_week_horizon_is_accepted() -> None:
+    client = TestClient(create_app())
+    bootstrap_owner(client)
+    created = client.post("/api/tasks", json={"title": "Next week chip"})
+    assert created.status_code == 201, created.text
+    task_id = created.json()["id"]
+    patched = client.patch(
+        f"/api/tasks/{task_id}",
+        json={
+            "due_at": "2026-11-28T12:00:00Z",
+            "due_horizon": "next_week",
+        },
+    )
+    assert patched.status_code == 200
+    assert patched.json()["due_horizon"] == "next_week"
+
+
 def test_patch_horizon_chip_persists_due_horizon() -> None:
     client = TestClient(create_app())
     bootstrap_owner(client)

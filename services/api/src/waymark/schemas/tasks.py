@@ -7,7 +7,14 @@ _STATUS_PATTERN = "^(backlog|in_progress|blocked|on_hold|failed|done|cancelled)$
 PAUSE_STATUSES = frozenset({"blocked", "on_hold"})
 
 DueHorizon = Literal[
-    "today", "tomorrow", "week", "month", "quarter", "year", "exact"
+    "today",
+    "tomorrow",
+    "week",
+    "next_week",
+    "month",
+    "quarter",
+    "year",
+    "exact",
 ]
 
 

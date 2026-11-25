@@ -121,6 +121,7 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "week": "This week",
+    "next_week": "Next week",
     "month": "This month",
     "quarter": "This quarter",
     "year": "This year",
@@ -132,6 +133,7 @@
       "today": "Due today",
       "tomorrow": "Due tomorrow",
       "week": "Due this week",
+      "next_week": "Due next week",
       "month": "Due this month",
       "quarter": "Due this quarter",
       "year": "Due this year"
@@ -142,6 +144,7 @@
     "today": "Today",
     "tomorrow": "Tomorrow",
     "week": "This week",
+    "next_week": "Next week",
     "month": "This month",
     "quarter": "This quarter",
     "year": "This year",
