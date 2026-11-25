@@ -61,6 +61,21 @@ describe('endOfHorizon', () => {
     assert.equal(end.getDate(), 28)
   })
 
+  it('next_week ends on the Saturday after this week', () => {
+    const end = endOfHorizon('next_week', wed)
+    assert.equal(end.getDay(), 6)
+    assert.equal(end.getDate(), 28)
+    assert.equal(end.getHours(), 23)
+  })
+
+  it('next_week on Sunday starts after the current Sunday-start week', () => {
+    const sunday = new Date(2026, 10, 22, 8, 0, 0, 0)
+    const end = endOfHorizon('next_week', sunday)
+    assert.equal(end.getDay(), 6)
+    assert.equal(end.getDate(), 5) // Dec 5
+    assert.equal(end.getMonth(), 11)
+  })
+
   it('month ends on last local day of month', () => {
     const end = endOfHorizon('month', wed)
     assert.equal(end.getMonth(), 10)
@@ -90,17 +105,20 @@ describe('dueSectionForDueAt / groupTasksByDueSection', () => {
   // Wednesday noon 2026-11-18
   const now = new Date(2026, 10, 18, 12, 0, 0, 0).getTime()
 
-  it('classifies overdue / today / tomorrow / week / none', () => {
+  it('classifies overdue / today / tomorrow / week / next_week / none', () => {
     assert.equal(dueSectionForDueAt(localIso(2026, 11, 17, 18), now), 'overdue')
     assert.equal(dueSectionForDueAt(localIso(2026, 11, 18, 20), now), 'today')
     assert.equal(dueSectionForDueAt(localIso(2026, 11, 19, 9), now), 'tomorrow')
     assert.equal(dueSectionForDueAt(localIso(2026, 11, 21, 12), now), 'week') // Sat
-    assert.equal(dueSectionForDueAt(localIso(2026, 11, 22, 12), now), 'month') // next Sun
+    assert.equal(dueSectionForDueAt(localIso(2026, 11, 22, 12), now), 'next_week') // next Sun
+    assert.equal(dueSectionForDueAt(localIso(2026, 11, 28, 12), now), 'next_week') // next Sat
     assert.equal(dueSectionForDueAt(null, now), 'none')
   })
 
   it('classifies month / quarter / later (Q4: year end == quarter end)', () => {
-    assert.equal(dueSectionForDueAt(localIso(2026, 11, 28, 12), now), 'month')
+    // After next week (ends Sat 28), still in November → month
+    assert.equal(dueSectionForDueAt(localIso(2026, 11, 29, 12), now), 'month')
+    assert.equal(dueSectionForDueAt(localIso(2026, 11, 30, 12), now), 'month')
     assert.equal(dueSectionForDueAt(localIso(2026, 12, 15, 12), now), 'quarter')
     // In Q4, Dec 31 lands in quarter (year bucket empty until next year → later)
     assert.equal(

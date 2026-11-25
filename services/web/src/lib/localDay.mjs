@@ -7,6 +7,7 @@ export const HORIZON_IDS = Object.freeze([
   'today',
   'tomorrow',
   'week',
+  'next_week',
   'month',
   'quarter',
   'year',
@@ -18,6 +19,7 @@ export const DUE_SECTION_IDS = Object.freeze([
   'today',
   'tomorrow',
   'week',
+  'next_week',
   'month',
   'quarter',
   'year',
@@ -47,8 +49,8 @@ export function endOfLocalDay(ref = new Date()) {
 
 /**
  * End of a named due horizon in the viewer's local timezone.
- * Week is Sunday-start (ends Saturday). Quarter ends on the last day of Mar/Jun/Sep/Dec.
- * @param {'today' | 'tomorrow' | 'week' | 'month' | 'quarter' | 'year'} horizon
+ * Week / next_week are Sunday-start (end Saturday). Quarter ends on the last day of Mar/Jun/Sep/Dec.
+ * @param {'today' | 'tomorrow' | 'week' | 'next_week' | 'month' | 'quarter' | 'year'} horizon
  * @param {Date} [ref]
  */
 export function endOfHorizon(horizon, ref = new Date()) {
@@ -66,6 +68,15 @@ export function endOfHorizon(horizon, ref = new Date()) {
         ref.getFullYear(),
         ref.getMonth(),
         ref.getDate() + daysUntilSaturday,
+      )
+      return endOfLocalDay(d)
+    }
+    case 'next_week': {
+      const thisWeekEnd = endOfHorizon('week', ref)
+      const d = new Date(
+        thisWeekEnd.getFullYear(),
+        thisWeekEnd.getMonth(),
+        thisWeekEnd.getDate() + 7,
       )
       return endOfLocalDay(d)
     }
@@ -127,6 +138,7 @@ export function dueSectionForDueAt(dueAt, nowMs = Date.now()) {
   if (t <= endOfHorizon('today', now).getTime()) return 'today'
   if (t <= endOfHorizon('tomorrow', now).getTime()) return 'tomorrow'
   if (t <= endOfHorizon('week', now).getTime()) return 'week'
+  if (t <= endOfHorizon('next_week', now).getTime()) return 'next_week'
   if (t <= endOfHorizon('month', now).getTime()) return 'month'
   if (t <= endOfHorizon('quarter', now).getTime()) return 'quarter'
   if (t <= endOfHorizon('year', now).getTime()) return 'year'
